@@ -417,6 +417,7 @@ const editSession = (): void => {
           {BIBLE_BOOKS.map((book, index) => {
             const { completed, total } = getBookProgress(index, session);
             const isCompleted = completed === total;
+            const isInProgress = completed > 0 && completed < total;
             const isMidpoint = index === 39; // 40th book (Matthew) - index starts at 0
             
             return (
@@ -424,11 +425,16 @@ const editSession = (): void => {
                 key={index}
                 style={[
                   styles.gridCell,
-                  isCompleted && styles.gridCellCompleted
+                  isCompleted && styles.gridCellCompleted,
+                  isInProgress && styles.gridCellInProgress
                 ]}
               >
                 {isMidpoint && (
-                  <Text style={[styles.gridCellText, isCompleted && styles.gridCellTextCompleted]}>NT</Text>
+                  <Text style={[
+                    styles.gridCellText, 
+                    isCompleted && styles.gridCellTextCompleted,
+                    isInProgress && styles.gridCellTextInProgress
+                  ]}>NT</Text>
                 )}
               </View>
             );
@@ -700,24 +706,33 @@ const editSession = (): void => {
             filteredBooks.map(({ book, index }) => {
               const { completed, total } = getBookProgress(index);
               const isCompleted = completed === total;
+              const isInProgress = completed > 0 && completed < total;
               const allCompleted = completed === total;
               const noneCompleted = completed === 0;
               
               return (
                 <View key={index} style={styles.bookContainer}>
                   <TouchableOpacity
-                    style={[styles.bookCard, isCompleted && styles.completedBookCard]}
+                    style={[
+                      styles.bookCard, 
+                      isCompleted && styles.completedBookCard,
+                      isInProgress && styles.inProgressBookCard
+                    ]}
                     onPress={() => setExpandedBook(index)}
                   >
                     <View style={styles.bookCardContent}>
                       <View style={styles.bookNameContainer}>
                         <Text style={styles.bookNumber}>{index + 1}.</Text>
-                        <Text style={[styles.bookName, isCompleted && styles.completedBookName]}>
+                        <Text style={[
+                          styles.bookName, 
+                          isCompleted && styles.completedBookName,
+                          isInProgress && styles.inProgressBookName
+                        ]}>
                           {book.name}
                         </Text>
                       </View>
                       <Text style={styles.bookProgress}>
-                        {completed} / {total} chapters
+                        {completed} / {total} chapters{isCompleted ? ' ✓' : ''}
                       </Text>
                       <BookProgressBar bookIndex={index} />
                     </View>
@@ -793,7 +808,7 @@ const editSession = (): void => {
         </TouchableOpacity>
         
         <Text style={styles.chapterProgress}>
-          {bookCompleted} / {bookTotal} chapters
+          {bookCompleted} / {bookTotal} chapters{allCompleted ? ' ✓' : ''}
         </Text>
         
         <TouchableOpacity
@@ -984,6 +999,9 @@ const styles = StyleSheet.create({
   gridCellCompleted: {
     backgroundColor: '#4CAF50',
   },
+  gridCellInProgress: {
+    backgroundColor: '#FFC107',
+  },
   gridCellText: {
     fontSize: 6,
     fontWeight: 'bold',
@@ -991,6 +1009,9 @@ const styles = StyleSheet.create({
   },
   gridCellTextCompleted: {
     color: '#fff',
+  },
+  gridCellTextInProgress: {
+    color: '#333',
   },
   booksCompletedText: {
     fontSize: 12,
@@ -1116,6 +1137,9 @@ const styles = StyleSheet.create({
   completedBookCard: {
     backgroundColor: '#e8f5e8',
   },
+  inProgressBookCard: {
+    backgroundColor: '#fff9c4',
+  },
   bookCardContent: {
     flex: 1,
   },
@@ -1138,6 +1162,9 @@ const styles = StyleSheet.create({
   },
   completedBookName: {
     color: '#4CAF50',
+  },
+  inProgressBookName: {
+    color: '#FF8F00',
   },
   bookProgress: {
     fontSize: 14,
