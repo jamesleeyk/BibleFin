@@ -9,7 +9,9 @@ import {
   Modal,
   Alert,
   StatusBar,
+  Platform,
   BackHandler,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -479,6 +481,14 @@ const editSession = (): void => {
         />
         <SafeAreaView style={styles.safeArea}>
         <ScrollView style={styles.sessionsList}>
+          {sessions.length === 0 && (
+            <View style={styles.emptySessionsContainer}>
+              <Text style={styles.emptySessionsTitle}>Welcome to BibleFin!</Text>
+              <Text style={styles.emptySessionsText}>
+                Create a new reading session to begin tracking your progress through the Bible.
+              </Text>
+            </View>
+          )}
           {sessions.map((session) => {
             const completedChapters = getCompletedChaptersCount(session);
             const progress = completedChapters / TOTAL_CHAPTERS;
@@ -536,7 +546,10 @@ const editSession = (): void => {
           transparent={true}
           animationType="slide"
         >
-          <View style={styles.modalOverlay}>
+          <KeyboardAvoidingView 
+            style={styles.modalOverlay} 
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          >
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Create New Session</Text>
               
@@ -575,14 +588,17 @@ const editSession = (): void => {
                 </TouchableOpacity>
               </View>
             </View>
-          </View>
+          </KeyboardAvoidingView>
         </Modal>
         <Modal
           visible={showEditModal}
           transparent={true}
           animationType="slide"
         >
-          <View style={styles.modalOverlay}>
+          <KeyboardAvoidingView 
+            style={styles.modalOverlay} 
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          >
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Edit Session</Text>
               
@@ -622,7 +638,7 @@ const editSession = (): void => {
                 </TouchableOpacity>
               </View>
             </View>
-          </View>
+          </KeyboardAvoidingView>
         </Modal>
         </SafeAreaView>
       </View>
@@ -1361,6 +1377,26 @@ const styles = StyleSheet.create({
   createButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  emptySessionsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 40,
+  },
+  emptySessionsTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  emptySessionsText: {
+    fontSize: 15,
+    color: '#777',
+    textAlign: 'center',
+    lineHeight: 24,
   },
 });
 
